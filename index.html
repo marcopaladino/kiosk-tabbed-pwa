@@ -3,20 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loading Kiosk...</title>
+  <title>Kiosk Launcher</title>
   <link rel="manifest" href="manifest.json">
   <style>
-    body { background-color: #ffffff; margin: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f8f9fa;
+      color: #202124;
+    }
+    .card {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
   </style>
 </head>
 <body>
 
-  <script>
-    // Primary site loaded directly inside Tab 1
-    const firstTabUrl = "https://sites.google.com/ocdsb.ca/yourpagetitle/home";
+  <div class="card">
+    <h2>Kiosk Dashboard</h2>
+    <p>Opening assessment tabs...</p>
+  </div>
 
-    // Secondary sites opened across additional tabs
-    const urlsToOpenInNewTabs = [
+  <script>
+    // All 7 target sites
+    const targetUrls = [
+      "https://sites.google.com/ocdsb.ca/yourpagetitle/home",
       "https://vault.vretta.com/#/en/login-student",
       "https://sites.google.com/ocdsb.ca/calculator",
       "https://sites.google.com/ocdsb.ca/graphingcalculator",
@@ -25,14 +45,10 @@
       "https://sites.google.com/ocdsb.ca/translategreen/translate"
     ];
 
-    function launchKiosk() {
-      // Open secondary tabs
-      urlsToOpenInNewTabs.forEach(url => {
+    function launchTabs() {
+      targetUrls.forEach(url => {
         window.open(url, '_blank');
       });
-
-      // Redirect Tab 1 to primary EQAO site
-      window.location.href = firstTabUrl;
     }
 
     // Intercept keyboard shortcuts
@@ -40,15 +56,12 @@
       const key = event.key.toLowerCase();
       const ctrlOrCmd = event.ctrlKey || event.metaKey;
 
-      // Block single function keys
       if (['f5', 'f12'].includes(key)) {
         event.preventDefault();
         event.stopPropagation();
         return false;
       }
 
-      // Block Ctrl/Cmd + [Key] combinations
-      // p = Print, s = Save, u = View Source, w = Close Tab, r = Reload, t = New Tab, n = New Window
       const blockedCtrlKeys = ['p', 's', 'u', 'w', 'r', 't', 'n', 'h'];
       if (ctrlOrCmd && blockedCtrlKeys.includes(key)) {
         event.preventDefault();
@@ -56,22 +69,20 @@
         return false;
       }
 
-      // Block Ctrl/Cmd + Shift + [Key] combinations
-      // i, j, c = DevTools, r = Hard Reload, n = Incognito, t = Reopen Closed Tab
       if (ctrlOrCmd && event.shiftKey && ['i', 'j', 'c', 'r', 'n', 't'].includes(key)) {
         event.preventDefault();
         event.stopPropagation();
         return false;
       }
-    }, true); // Captures keystrokes before underlying page elements process them
+    }, true);
 
-    // Block right-click context menu (prevents Inspect Element / Print)
+    // Disable right-click
     document.addEventListener('contextmenu', (event) => {
       event.preventDefault();
     });
 
     window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(launchKiosk, 400);
+      setTimeout(launchTabs, 500);
     });
 
     if ('serviceWorker' in navigator) {
