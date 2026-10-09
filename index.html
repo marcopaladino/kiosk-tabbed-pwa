@@ -6,9 +6,6 @@
   <title>Kiosk Assessment App</title>
   <link rel="manifest" href="manifest.json">
   
-  <!-- Desmos API Script -->
-  <script src="https://www.desmos.com/api/v1.12/calculator.js?apiKey=7b34b73d0e4445f3b6b9123a5a83030d"></script>
-  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, sans-serif; background: #202124; }
@@ -31,7 +28,7 @@
       border: none;
       border-radius: 8px 8px 0 0;
       margin-right: 4px;
-      font-size: 13px;
+      font-size: 30px;
       cursor: pointer;
       white-space: nowrap;
       transition: background 0.2s, color 0.2s;
@@ -62,7 +59,7 @@
       display: flex;
     }
 
-    /* Instruction Banner - Font size increased by 6pt (14px -> 20px) */
+    /* Instruction Banner (+6pt font size increase) */
     .instruction-banner {
       height: 48px;
       line-height: 48px;
@@ -73,13 +70,24 @@
       border-bottom: 1px solid #dadce0;
     }
 
-    /* Desmos API Container */
-    #calculator {
+    /* Iframe Cropping Wrapper */
+    .desmos-crop-container {
       width: 100%;
       flex: 1;
+      overflow: hidden;
+      position: relative;
     }
 
-    iframe {
+    .desmos-crop-container iframe {
+      position: absolute;
+      top: -55px; /* Crops top header bar */
+      left: 0;
+      width: 100%;
+      height: calc(100% + 95px); /* Extends height to push footer off-screen */
+      border: none;
+    }
+
+    iframe.standard-iframe {
       width: 100%;
       flex: 1;
       border: none;
@@ -92,7 +100,7 @@
   <div class="tab-bar">
     <button class="tab-button active" onclick="switchTab(0)">Home</button>
     <button class="tab-button" onclick="switchTab(1)">Vault Vretta</button>
-    <button class="tab-button" onclick="switchTab(2)">Calculator</button>
+    <button class="tab-button" onclick="switchTab(2)">Scientific Calculator</button>
     <button class="tab-button" onclick="switchTab(3)">Graphing Calculator</button>
     <button class="tab-button" onclick="switchTab(4)">Polypad</button>
     <button class="tab-button" onclick="switchTab(5)">GeoGebra</button>
@@ -103,54 +111,50 @@
   <div class="tab-content-container">
     <!-- Tab 0: Home -->
     <div class="tab-panel active">
-      <iframe src="https://sites.google.com/ocdsb.ca/yourpagetitle/home"></iframe>
+      <iframe class="standard-iframe" src="https://sites.google.com/ocdsb.ca/yourpagetitle/home"></iframe>
     </div>
 
     <!-- Tab 1: Vault Vretta -->
     <div class="tab-panel">
-      <iframe src="https://vault.vretta.com/#/en/login-student"></iframe>
+      <iframe class="standard-iframe" src="https://vault.vretta.com/#/en/login-student"></iframe>
     </div>
 
-    <!-- Tab 2: Desmos Native API Calculator -->
+    <!-- Tab 2: Cropped Desmos Scientific Calculator -->
     <div class="tab-panel">
       <div class="instruction-banner">
         If needed, the <strong>wrench 🔧</strong> icon on the calculator can be used to increase the font size.
       </div>
-      <div id="calculator"></div>
+      <div class="desmos-crop-container">
+        <iframe 
+          src="https://www.desmos.com/scientific" 
+          name="myiFrame" 
+          allowfullscreen>
+        </iframe>
+      </div>
     </div>
 
     <!-- Tab 3: Graphing Calculator -->
     <div class="tab-panel">
-      <iframe src="https://sites.google.com/ocdsb.ca/graphingcalculator"></iframe>
+      <iframe class="standard-iframe" src="https://sites.google.com/ocdsb.ca/graphingcalculator"></iframe>
     </div>
 
     <!-- Tab 4: Polypad -->
     <div class="tab-panel">
-      <iframe src="https://sites.google.com/ocdsb.ca/polypad"></iframe>
+      <iframe class="standard-iframe" src="https://sites.google.com/ocdsb.ca/polypad"></iframe>
     </div>
 
     <!-- Tab 5: GeoGebra -->
     <div class="tab-panel">
-      <iframe src="https://sites.google.com/ocdsb.ca/geogebra"></iframe>
+      <iframe class="standard-iframe" src="https://sites.google.com/ocdsb.ca/geogebra"></iframe>
     </div>
 
     <!-- Tab 6: Translate -->
     <div class="tab-panel">
-      <iframe src="https://sites.google.com/ocdsb.ca/translategreen/translate"></iframe>
+      <iframe class="standard-iframe" src="https://sites.google.com/ocdsb.ca/translategreen/translate"></iframe>
     </div>
   </div>
 
   <script>
-    let calculator = null;
-
-    // Initialize Desmos Native API Calculator
-    window.addEventListener('DOMContentLoaded', () => {
-      const elt = document.getElementById('calculator');
-      if (elt && typeof Desmos !== 'undefined') {
-        calculator = Desmos.GraphingCalculator(elt);
-      }
-    });
-
     // Switch visible tab and panel
     function switchTab(index) {
       const tabs = document.querySelectorAll('.tab-button');
@@ -158,11 +162,6 @@
 
       tabs.forEach((tab, i) => tab.classList.toggle('active', i === index));
       panels.forEach((panel, i) => panel.classList.toggle('active', i === index));
-
-      // Resize Desmos canvas when switching to Tab 2 to ensure full rendering
-      if (index === 2 && calculator) {
-        calculator.resize();
-      }
     }
 
     // Intercept keyboard shortcuts
