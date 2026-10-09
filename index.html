@@ -3,52 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kiosk Launcher</title>
+  <title>Kiosk Assessment App</title>
   <link rel="manifest" href="manifest.json">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, sans-serif; background: #202124; }
+    
+    /* Simulated Top Tab Bar */
+    .tab-bar {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f8f9fa;
-      color: #202124;
+      background: #292a2d;
+      border-bottom: 2px solid #3c4043;
+      height: 42px;
+      padding-top: 4px;
+      padding-left: 6px;
+      overflow-x: auto;
     }
-    .card {
+    
+    .tab-button {
+      padding: 8px 16px;
+      background: #35363a;
+      color: #9aa0a6;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      margin-right: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s;
+    }
+    
+    .tab-button.active {
       background: #ffffff;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-align: center;
+      color: #202124;
+      font-weight: 600;
+    }
+
+    /* Iframe Display Container */
+    .iframe-container {
+      width: 100vw;
+      height: calc(100vh - 42px);
+      position: relative;
+      background: #ffffff;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+    }
+
+    iframe.active {
+      display: block;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Kiosk Dashboard</h2>
-    <p>Opening assessment tabs...</p>
+  <!-- Top Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-button active" onclick="switchTab(0)">Home</button>
+    <button class="tab-button" onclick="switchTab(1)">Vault Vretta</button>
+    <button class="tab-button" onclick="switchTab(2)">Calculator</button>
+    <button class="tab-button" onclick="switchTab(3)">Graphing</button>
+    <button class="tab-button" onclick="switchTab(4)">Polypad</button>
+    <button class="tab-button" onclick="switchTab(5)">GeoGebra</button>
+    <button class="tab-button" onclick="switchTab(6)">Translate</button>
+  </div>
+
+  <!-- Embedded Web Content -->
+  <div class="iframe-container">
+    <iframe src="https://sites.google.com/ocdsb.ca/yourpagetitle/home" class="active"></iframe>
+    <iframe src="https://vault.vretta.com/#/en/login-student"></iframe>
+    <iframe src="https://sites.google.com/ocdsb.ca/calculator"></iframe>
+    <iframe src="https://sites.google.com/ocdsb.ca/graphingcalculator"></iframe>
+    <iframe src="https://sites.google.com/ocdsb.ca/polypad"></iframe>
+    <iframe src="https://sites.google.com/ocdsb.ca/geogebra"></iframe>
+    <iframe src="https://sites.google.com/ocdsb.ca/translategreen/translate"></iframe>
   </div>
 
   <script>
-    // All 7 target sites
-    const targetUrls = [
-      "https://eqao.vretta.com/#/en/login-student",
-      "https://vault.vretta.com/#/en/login-student",
-      "https://sites.google.com/ocdsb.ca/calculator",
-      "https://sites.google.com/ocdsb.ca/graphingcalculator",
-      "https://sites.google.com/ocdsb.ca/polypad",
-      "https://sites.google.com/ocdsb.ca/geogebra",
-      "https://sites.google.com/ocdsb.ca/translategreen/translate"
-    ];
+    // Switch visible tab and iframe
+    function switchTab(index) {
+      const tabs = document.querySelectorAll('.tab-button');
+      const iframes = document.querySelectorAll('iframe');
 
-    function launchTabs() {
-      targetUrls.forEach(url => {
-        window.open(url, '_blank');
-      });
+      tabs.forEach((tab, i) => tab.classList.toggle('active', i === index));
+      iframes.forEach((iframe, i) => iframe.classList.toggle('active', i === index));
     }
 
     // Intercept keyboard shortcuts
@@ -76,13 +118,9 @@
       }
     }, true);
 
-    // Disable right-click
+    // Disable right-click context menu
     document.addEventListener('contextmenu', (event) => {
       event.preventDefault();
-    });
-
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(launchTabs, 500);
     });
 
     if ('serviceWorker' in navigator) {
