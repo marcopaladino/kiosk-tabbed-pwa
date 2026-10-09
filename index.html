@@ -3,50 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kiosk Main View</title>
+  <title>Loading Kiosk...</title>
   <link rel="manifest" href="manifest.json">
   <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f4f4f9;
-    }
-    .card {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    button {
-      margin-top: 1rem;
-      padding: 10px 20px;
-      font-size: 14px;
-      border: none;
-      border-radius: 4px;
-      background-color: #0066cc;
-      color: white;
-      cursor: pointer;
-    }
+    body { background-color: #ffffff; margin: 0; }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h1>Kiosk Controller</h1>
-    <p>Opening external URLs in separate tabs...</p>
-    <button onclick="launchTabs()">Re-open Tabs</button>
-  </div>
-
   <script>
-    // Replace these with the actual websites you want to open
-    const targetUrls = [
-      "https://eqao.vretta.com/#/en/login-student",
+    // Primary site loaded directly inside Tab 1
+    const firstTabUrl = "https://eqao.vretta.com/#/en/login-student";
+
+    // Secondary sites opened across additional tabs
+    const urlsToOpenInNewTabs = [
+      "https://vault.vretta.com/#/en/login-student",
       "https://sites.google.com/ocdsb.ca/calculator",
       "https://sites.google.com/ocdsb.ca/graphingcalculator",
       "https://sites.google.com/ocdsb.ca/polypad",
@@ -54,18 +25,20 @@
       "https://sites.google.com/ocdsb.ca/translategreen/translate"
     ];
 
-    function launchTabs() {
-      targetUrls.forEach(url => {
+    function launchKiosk() {
+      // Open secondary tabs
+      urlsToOpenInNewTabs.forEach(url => {
         window.open(url, '_blank');
       });
+
+      // Redirect Tab 1 to primary EQAO site
+      window.location.href = firstTabUrl;
     }
 
-    // Automatically trigger tab creation after the page loads
     window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(launchTabs, 600);
+      setTimeout(launchKiosk, 400);
     });
 
-    // Register Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
