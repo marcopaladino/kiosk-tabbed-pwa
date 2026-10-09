@@ -9,7 +9,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; font-family: system-ui, -apple-system, sans-serif; background: #202124; }
     
-    /* Simulated Top Tab Bar */
+    /* Custom Top Tab Bar */
     .tab-bar {
       display: flex;
       background: #292a2d;
@@ -39,23 +39,40 @@
       font-weight: 600;
     }
 
-    /* Iframe Display Container */
-    .iframe-container {
+    /* Content Area */
+    .tab-content-container {
       width: 100vw;
       height: calc(100vh - 42px);
       position: relative;
       background: #ffffff;
     }
 
-    iframe {
+    .tab-panel {
       width: 100%;
       height: 100%;
-      border: none;
       display: none;
+      flex-direction: column;
     }
 
-    iframe.active {
-      display: block;
+    .tab-panel.active {
+      display: flex;
+    }
+
+    /* Instruction Banner */
+    .instruction-banner {
+      height: 36px;
+      line-height: 36px;
+      padding: 0 16px;
+      font-size: 14px;
+      background-color: #f8f9fa;
+      color: #202124;
+      border-bottom: 1px solid #dadce0;
+    }
+
+    iframe {
+      width: 100%;
+      flex: 1;
+      border: none;
     }
   </style>
 </head>
@@ -65,32 +82,62 @@
   <div class="tab-bar">
     <button class="tab-button active" onclick="switchTab(0)">Home</button>
     <button class="tab-button" onclick="switchTab(1)">Vault Vretta</button>
-    <button class="tab-button" onclick="switchTab(2)">Calculator</button>
-    <button class="tab-button" onclick="switchTab(3)">Graphing</button>
+    <button class="tab-button" onclick="switchTab(2)">Scientific Calculator</button>
+    <button class="tab-button" onclick="switchTab(3)">Graphing Calculator</button>
     <button class="tab-button" onclick="switchTab(4)">Polypad</button>
     <button class="tab-button" onclick="switchTab(5)">GeoGebra</button>
     <button class="tab-button" onclick="switchTab(6)">Translate</button>
   </div>
 
-  <!-- Embedded Web Content -->
-  <div class="iframe-container">
-    <iframe src="https://sites.google.com/ocdsb.ca/yourpagetitle/home" class="active"></iframe>
-    <iframe src="https://vault.vretta.com/#/en/login-student"></iframe>
-    <iframe src="https://sites.google.com/ocdsb.ca/calculator"></iframe>
-    <iframe src="https://sites.google.com/ocdsb.ca/graphingcalculator"></iframe>
-    <iframe src="https://sites.google.com/ocdsb.ca/polypad"></iframe>
-    <iframe src="https://sites.google.com/ocdsb.ca/geogebra"></iframe>
-    <iframe src="https://sites.google.com/ocdsb.ca/translategreen/translate"></iframe>
+  <!-- Content Panels -->
+  <div class="tab-content-container">
+    <!-- Tab 0: Home -->
+    <div class="tab-panel active">
+      <iframe src="https://sites.google.com/ocdsb.ca/yourpagetitle/home"></iframe>
+    </div>
+
+    <!-- Tab 1: Vault Vretta -->
+    <div class="tab-panel">
+      <iframe src="https://vault.vretta.com/#/en/login-student"></iframe>
+    </div>
+
+    <!-- Tab 2: Desmos Scientific Calculator Direct Embed -->
+    <div class="tab-panel">
+      <div class="instruction-banner">
+        If needed, the <strong>wrench 🔧</strong> icon on the calculator can be used to increase the font size.
+      </div>
+      <iframe src="https://www.desmos.com/scientific" allowfullscreen></iframe>
+    </div>
+
+    <!-- Tab 3: Graphing Calculator -->
+    <div class="tab-panel">
+      <iframe src="https://sites.google.com/ocdsb.ca/graphingcalculator"></iframe>
+    </div>
+
+    <!-- Tab 4: Polypad -->
+    <div class="tab-panel">
+      <iframe src="https://sites.google.com/ocdsb.ca/polypad"></iframe>
+    </div>
+
+    <!-- Tab 5: GeoGebra -->
+    <div class="tab-panel">
+      <iframe src="https://sites.google.com/ocdsb.ca/geogebra"></iframe>
+    </div>
+
+    <!-- Tab 6: Translate -->
+    <div class="tab-panel">
+      <iframe src="https://sites.google.com/ocdsb.ca/translategreen/translate"></iframe>
+    </div>
   </div>
 
   <script>
-    // Switch visible tab and iframe
+    // Switch visible tab and panel
     function switchTab(index) {
       const tabs = document.querySelectorAll('.tab-button');
-      const iframes = document.querySelectorAll('iframe');
+      const panels = document.querySelectorAll('.tab-panel');
 
       tabs.forEach((tab, i) => tab.classList.toggle('active', i === index));
-      iframes.forEach((iframe, i) => iframe.classList.toggle('active', i === index));
+      panels.forEach((panel, i) => panel.classList.toggle('active', i === index));
     }
 
     // Intercept keyboard shortcuts
